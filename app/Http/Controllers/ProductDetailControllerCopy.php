@@ -7,7 +7,7 @@ use App\Models\UserExtension;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Log;
 
-class ProductDetailController extends Controller
+class ProductDetailControllerCopy extends Controller
 {
     public function index() {
         $currentUserData = UserExtension::getCurrentUserData();
