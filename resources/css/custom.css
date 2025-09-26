@@ -1,0 +1,19 @@
+
+.heading-style {
+  background: linear-gradient(90deg, #fff9c4, #ffcc80, #C0C0C0);
+  color: #4a4a4a;     
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.myline{
+    background: linear-gradient(90deg, #C0C0C0, #fff9c4, #ffcc80);
+    /*box-shadow: 0 2px 6px rgba(0,0,0,0.1);*/
+    padding: 1px;
+}
+
+#qr-output svg {
+    display: block;
+    margin: 1rem auto;
+    max-width: 250px;
+}
