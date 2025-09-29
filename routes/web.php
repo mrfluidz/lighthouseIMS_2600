@@ -27,6 +27,12 @@ Route::get('/product_detail', [ProductDetailController::class, 'index'])
 Route::post('/product_detail/qr-code', [ProductDetailController::class, 'generateQr'])->name('product_detail.qr');
 
 
+
+Route::get('/product/create', [ProductDetailController::class, 'index'])->name('product.create');
+Route::post('/product', [ProductDetailController::class, 'store'])->name('product.store');
+//Route::get('/products', [ProductDetailController::class, 'list'])->name('product');  // Or wherever your product list is
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
