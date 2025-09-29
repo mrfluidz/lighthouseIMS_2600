@@ -35,7 +35,7 @@
                 </form>
 
                 <div class="myline"></div>
-
+                <div class="mt-4"></div>
                 <!-- Products table -->
                 <table class="min-w-full table-auto border border-gray-300">
                     <thead class="bg-gray-100 dark:bg-gray-700">
@@ -45,6 +45,7 @@
                             <th class="border px-4 py-2 text-left text-gray-700 dark:text-gray-200">Product Code</th>
                             <th class="border px-4 py-2 text-left text-gray-700 dark:text-gray-200">Product Name</th>
                             <th class="border px-4 py-2 text-left text-gray-700 dark:text-gray-200">Product Description</th>
+                            <th class="border px-4 py-2 text-left text-gray-700 dark:text-gray-200">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-800">
@@ -64,6 +65,20 @@
                                 </td>
                                 <td class="border px-4 py-2 text-gray-800 dark:text-gray-100">
                                     {{ $product->details }}
+                                </td>
+                                <td class="border px-4 py-2 text-gray-800 dark:text-gray-100">
+                                    <button type="submit"
+                                        class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                                            Edit
+                                    </a>
+                                    <button type="submit"
+                                            class="ml-4 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded">
+                                        Delete
+                                    </button>
+                                     <button type="submit"
+                                        class="ml-4 bg-gray-500 hover:bg-gray-600 text-white text-xs px-2 py-1 rounded">
+                                            Generate QR
+                                    </button>
                                 </td>
                             </tr>
                         @empty
