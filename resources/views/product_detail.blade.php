@@ -28,8 +28,8 @@
                 @csrf
                     <div class="flex flex-wrap -mx-2">
                         <div class="w-full sm:w-1/3 px-2 mb-4 sm:mb-0">
-                            <x-input-label for="category" :value="__('Category')" />
-                                <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <x-input-label for="category" :value="__('Category')" required />
+                                <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm ">
                                     <option value="">-- Select Category --</option>
                                         @foreach($categories as $id => $category)
                                         <option value="{{ $id }}">{{ $category }}</option>

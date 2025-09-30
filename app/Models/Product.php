@@ -17,6 +17,8 @@ class Product extends Model
         'stocks',
         'priceCode',
         'price',
+        'branch_id',
+        'created_by'
        // 'product_image',  // if you want to store image filename/path
     ];
 

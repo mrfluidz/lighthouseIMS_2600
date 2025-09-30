@@ -48,7 +48,7 @@
                             <th class="border px-4 py-2 text-left text-gray-700 dark:text-gray-200">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800">
+                   <tbody class="bg-white dark:bg-gray-800">
                         @forelse ($products as $product)
                             <tr>
                                 <td class="border px-4 py-2 text-gray-800 dark:text-gray-100">
@@ -67,23 +67,105 @@
                                     {{ $product->details }}
                                 </td>
                                 <td class="border px-4 py-2 text-gray-800 dark:text-gray-100">
-                                    <button type="submit"
-                                        class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                                    <!-- Wrap buttons + modal in x-data for each product -->
+                                    <div x-data="{ open: false }">
+                                        <!-- Action Buttons -->
+                                        <button type="button"
+                                            class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">
                                             Edit
-                                    </a>
-                                    <button type="submit"
-                                            class="ml-4 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded">
-                                        Delete
-                                    </button>
-                                     <button type="submit"
-                                        class="ml-4 bg-gray-500 hover:bg-gray-600 text-white text-xs px-2 py-1 rounded">
+                                        </button>
+                                        <button type="button"
+                                            class="ml-2 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded">
+                                            Delete
+                                        </button>
+                                        <button @click="open = true"
+                                            type="button"
+                                            class="ml-2 bg-gray-500 hover:bg-gray-600 text-white text-xs px-2 py-1 rounded">
                                             Generate QR
-                                    </button>
+                                        </button>
+
+                                        <!-- Modal -->
+                                        <div
+                                            x-show="open"
+                                            x-transition
+                                            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                                            style="display: none;"
+                                        >
+                                            <!-- Modal content -->
+                                            <div @click.away="open = false"
+                                                class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md">
+                                                <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">
+                                                    QR for {{ $product->product_name }}
+                                                </h2>
+
+                                                <p class="mb-4 text-gray-600 dark:text-gray-300">
+                                                    Code: <strong>{{ $product->code }}</strong>
+                                                </p>
+
+                                                <!-- QR CODE IMAGE (Optional) -->
+                                                {{-- Example using QRServer API --}}
+                                               <!-- QR Code Image -->
+                                                <img 
+                                                    id="qr-image-{{ $product->id }}" 
+                                                    src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode($product->code) }}" 
+                                                    alt="QR Code for {{ $product->code }}" 
+                                                    class="mx-auto mb-4"
+                                                />
+
+                                                <div class="flex justify-between">
+                                                    <!-- Download Button -->
+                                                   <button 
+                                                        @click.prevent="
+                                                            const imageUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode($product->code) }}';
+
+                                                            const img = new Image();
+                                                            img.crossOrigin = 'anonymous'; // Important for cross-origin fetch
+
+                                                            img.onload = () => {
+                                                                const padding = 10; // pixels
+                                                                const canvas = document.createElement('canvas');
+                                                                const size = img.width + padding * 2;
+
+                                                                canvas.width = size;
+                                                                canvas.height = size;
+
+                                                                const ctx = canvas.getContext('2d');
+                                                                ctx.fillStyle = '#ffffff'; // background (white)
+                                                                ctx.fillRect(0, 0, size, size);
+
+                                                                ctx.drawImage(img, padding, padding);
+
+                                                                const a = document.createElement('a');
+                                                                a.href = canvas.toDataURL('image/png');
+                                                                a.download = 'qr-{{ $product->code }}.png';
+                                                                a.click();
+                                                            };
+
+                                                            img.src = imageUrl;
+                                                        "
+                                                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                                                    >
+                                                        Download QR
+                                                    </button>
+
+
+                                                    <!-- Close Button -->
+                                                    <button 
+                                                        @click="open = false"
+                                                        class="px-4 py-2 bg-gray-300 dark:bg-gray-700 dark:text-white rounded hover:bg-gray-400"
+                                                    >
+                                                        Close
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="border px-4 py-2 text-center text-gray-600 dark:text-gray-300">
+                                <td colspan="6" class="border px-4 py-2 text-center text-gray-600 dark:text-gray-300">
                                     No products found.
                                 </td>
                             </tr>
@@ -99,4 +181,5 @@
             </div>
         </div>
     </div>
+   
 </x-app-layout>

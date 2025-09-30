@@ -13,7 +13,7 @@ class ProductController extends Controller
 
         $search = $request->input('search');
 
-        $products = Product::search($search)->paginate(10)->withQueryString();
+        $products = Product::search($search)->paginate(1)->withQueryString();
 
         return view('product', compact('products', 'search', 'currentUserData'));
     }

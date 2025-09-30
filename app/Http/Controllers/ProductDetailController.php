@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\UserExtension;
 use App\Models\Category;
 use App\Models\Product;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 class ProductDetailController extends Controller
 {
     public function index()
@@ -20,8 +21,15 @@ class ProductDetailController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request){
+        $userData = UserExtension::getCurrentUserData();
+
+        if (!$userData) {
+            return response()->json(['error' => 'User extension not found or inactive'], 403);
+        }
+
+        $branchId = $userData->branch_id;
+
         $request->validate([
             'product_code' => 'required|string|unique:products,code',
             'name' => 'required|string|unique:products,product_name',
@@ -32,6 +40,7 @@ class ProductDetailController extends Controller
             'stocks' => 'required|integer|min:0',
             'priceCode' => 'required|string',
             'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
             //'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // optional validation for image
         ]);
 
@@ -54,10 +63,19 @@ class ProductDetailController extends Controller
             'stocks' => $request->input('stocks'),
             'priceCode' => $request->input('priceCode'),
             'price' => $request->input('price'),
+            'created_by' => Auth::id(),
+            'branch_id' => $branchId
+
+
            // 'product_image' => $request->input('product_image') ?? null,
         ];
-
+        try {
         Product::create($data);
+            Log::info('Product created successfully', $data);
+        } catch (\Exception $e) {
+            Log::error('Error creating product: ' . $e->getMessage());
+            return back()->withErrors(['msg' => 'Failed to create product.']);
+        }
 
         return redirect()->route('product')->with('success', 'Product created successfully.');
     }
