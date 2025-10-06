@@ -12,17 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-<<<<<<< HEAD
-            // Add branch_id and created_by (foreign keys)
-           // $table->unsignedBigInteger('branch_id')->after('id');
-            //$table->unsignedBigInteger('created_by')->after('branch_id');
-
-            // Add is_active column
-            $table->boolean('is_active')->default(true)->after('created_by');
-
-            // Define foreign key constraints
-           // $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-=======
             // Add 'branch_id' column after 'id'
             $table->unsignedBigInteger('branch_id')->after('id');
 
@@ -34,7 +23,6 @@ return new class extends Migration
 
             // Add foreign key constraints
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
->>>>>>> recovered-main
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
@@ -45,21 +33,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
-<<<<<<< HEAD
-            // Drop foreign keys first
-            //$table->dropForeign(['branch_id']);
-            //$table->dropForeign(['created_by']);
-
-            // Then drop the columns
-           // $table->dropColumn(['branch_id', 'created_by', 'is_active']);
-=======
             // Drop foreign key constraints
             $table->dropForeign(['branch_id']);
             $table->dropForeign(['created_by']);
 
             // Drop the columns
             $table->dropColumn(['branch_id', 'created_by', 'is_active']);
->>>>>>> recovered-main
         });
     }
 };

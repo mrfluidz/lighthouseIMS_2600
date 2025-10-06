@@ -5,10 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\InvoiceController;
->>>>>>> recovered-main
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -20,13 +18,12 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-<<<<<<< HEAD
-=======
+
 Route::get('/invoice', [InvoiceController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('invoice');
 
->>>>>>> recovered-main
+
 Route::get('/product', [ProductController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('product');
