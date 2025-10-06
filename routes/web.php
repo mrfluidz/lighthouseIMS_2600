@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoiceDetailController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,6 +23,9 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 Route::get('/invoice', [InvoiceController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('invoice');
+Route::get('/invoice_detail', [InvoiceDetailController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('invoice_detail');
 
 
 Route::get('/product', [ProductController::class, 'index'])

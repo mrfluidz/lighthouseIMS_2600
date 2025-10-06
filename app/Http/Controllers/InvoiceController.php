@@ -10,6 +10,7 @@ class InvoiceController extends Controller
     public function index()
     {
         $userExtensions = UserExtension::getUserExtension();
-        return view('invoice',compact('userExtensions'));
+        $currentUserData = UserExtension::getCurrentUserData();
+        return view('invoice',compact('userExtensions','currentUserData'));
     }
 }
