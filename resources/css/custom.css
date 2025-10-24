@@ -27,6 +27,13 @@
   border-radius: 4px;
   font-family: system-ui, sans-serif;
 }
+
+.gray-separator {
+  border: none;
+  height: 1px;
+  background-color: #ccc; /* Light gray */
+  margin: 24px 0;          /* Space above/below */
+}
 /*----Reusable CSS END ----*/
 
 /*----Wizard CSS START ----*/
@@ -50,3 +57,100 @@
   width: calc(100% - 2rem); /* match input width minus padding */
 }
 /*----Wizard CSS END ----*/
+
+/*----Reusable Panel CSS START----*/
+.panel {
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.panel-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111;
+}
+
+.panel-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    color: #fff;
+}
+
+/* Panel background colors */
+.panel-red { background-color: #ffe5e5; }    /* Out of Stock */
+.panel-green { background-color: #e6f7e6; }  /* Most Sold */
+.panel-blue { background-color: #e6f0ff; }   /* Most Restocked */
+.panel-yellow { background-color: #fff8e6; } /* Low Sales */
+
+/* Label colors */
+.label-red { background-color: #e02424; }
+.label-green { background-color: #059669; }
+.label-blue { background-color: #2563eb; }
+.label-yellow { background-color: #d97706; }
+
+/* List styles */
+.panel ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid #ccc;
+}
+
+.panel li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.panel li span.value {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    background-color: rgba(0,0,0,0.05);
+}
+
+/* Pagination */
+.panel .pagination a {
+    display: inline-block;
+    margin: 0 0.2rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.25rem;
+    border: 1px solid #ccc;
+    font-size: 0.875rem;
+    text-decoration: none;
+    color: #111;
+}
+
+.panel .pagination a.active {
+    background-color: #111;
+    color: #fff;
+}
+
+/* View more link */
+.panel .view-more {
+    text-align: right;
+    margin-top: 0.5rem;
+}
+
+.panel .view-more a {
+    font-weight: 600;
+    color: #111;
+    text-decoration: underline;
+}
+/*----Reusable Panel CSS END----*/
+

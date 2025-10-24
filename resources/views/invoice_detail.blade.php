@@ -7,17 +7,27 @@
     <div class="mt-4"></div>
     <div class="note-text-info max-w-7xl mx-auto p-6 bg-white shadow rounded">
         
-        <span class="info-icon mr-1" aria-hidden="true">ℹ️</span>To create an invoice, please complete the 3 steps below. Make sure to save it as a draft before navigating away or switching pages.
+        <span class="info-icon mr-1" aria-hidden="true">ℹ️</span>To create an invoice, please complete the <b>3 steps below</b>. Make sure to <b> save it as a draft </b> before navigating away or switching pages.
         <div class="ml-6">
-            Once all steps are finalized, you may submit and generate your invoice.
+            Once all steps are <b>finalized</b>, you may <b>submit and generate</b> your invoice.
         </div> 
         
     </div>
     <div class="mt-4"></div>
     <div class="max-w-7xl mx-auto p-6 bg-white shadow rounded">
-        <div>
-             <p><strong>Branch: {{ $currentUserData->branch_name }}</strong></p>
+        <div class="flex justify-between items-center mb-6">
+           
+            <h2 class="text-gray-900 dark:text-gray-100 text-xl">{{ __("Create Invoice") }}</h2>
+            <p><strong>Branch: {{ $currentUserData->branch_name }}</p></strong>
+            <!-- Button -->
+            <a href="{{ route('invoice') }}" 
+                class="inline-flex items-center px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                
+                    Back
+            </a>
+                   
         </div>
+        <div class="gray-separator"></div>
         <!-- Step Indicators -->
         <div class="flex justify-between mb-8">
             <div class="step-indicator active" data-step="1">1. Invoice Details</div>
