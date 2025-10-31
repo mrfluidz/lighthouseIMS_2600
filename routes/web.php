@@ -1,54 +1,76 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceDetailController;
+use App\Http\Controllers\ProfileController;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-/*Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');*/
+// Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-
+// Invoice
 Route::get('/invoice', [InvoiceController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('invoice');
+
 Route::get('/invoice_detail', [InvoiceDetailController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('invoice_detail');
 
+// Products
+Route::middleware(['auth', 'verified'])->group(function () {
 
-Route::get('/product', [ProductController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('product');
+    // Product Listing
+    Route::get('/product', [ProductController::class, 'index'])
+        ->name('product');
 
-Route::get('/product_detail', [ProductDetailController::class, 'index'])
+    // Product Create Form
+    Route::get('/product_detail', [ProductDetailController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('product_detail');
+    // Store New Product
+    Route::post('/product', [ProductDetailController::class, 'store'])
+        ->name('product.store');
 
-Route::post('/product_detail/qr-code', [ProductDetailController::class, 'generateQr'])->name('product_detail.qr');
+    // Update Stock
+    Route::post('/product/{product}/update-stock', [ProductController::class, 'updateStock'])
+        ->name('product.updateStock');
 
+    // Generate QR Code
+    Route::get('/product/{product}/qr-code', [ProductController::class, 'generateQr'])
+        ->name('product.qr');
 
+    // Optional: Edit & Delete (if you add methods)
+    Route::get('/product/{product}/edit', [ProductDetailController::class, 'edit'])
+        ->name('product.edit');
 
-Route::get('/product/create', [ProductDetailController::class, 'index'])->name('product.create');
-Route::post('/product', [ProductDetailController::class, 'store'])->name('product.store');
-//Route::get('/products', [ProductDetailController::class, 'list'])->name('product');  // Or wherever your product list is
+    Route::delete('/product/{product}', [ProductDetailController::class, 'destroy'])
+        ->name('product.destroy');
+});
 
-
+// Profile Management
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';
