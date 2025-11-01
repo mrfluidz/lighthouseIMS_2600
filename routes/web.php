@@ -7,7 +7,7 @@ use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceDetailController;
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\ReportController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -62,6 +62,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/product/{product}', [ProductDetailController::class, 'destroy'])
         ->name('product.destroy');
 });
+
+//Reports
+    Route::get('/report', [ReportController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('report');
 
 // Profile Management
 Route::middleware('auth')->group(function () {

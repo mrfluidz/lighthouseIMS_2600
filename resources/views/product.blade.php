@@ -29,7 +29,16 @@
                         <button @click="show = false" class="ml-4 font-bold text-red-800">&times;</button>
                     </div>
                 @endif
-
+                
+                @if(session('info'))
+                    <div x-data="{ show: true }" 
+                        x-init="setTimeout(() => show = false, 3000)" 
+                        x-show="show"
+                        class="mb-4 px-4 py-2 bg-blue-100 text-blue-800 rounded flex justify-between items-center transition-all duration-500">
+                        <span>{{ session('info') }}</span>
+                        <button @click="show = false" class="ml-4 font-bold text-blue-800">&times;</button>
+                    </div>
+                @endif
 
 
                 <!-- Title and Button -->
@@ -101,7 +110,8 @@
                                                 Current Stock: <strong>{{ $product->stocks }}</strong>
                                             </p>
 
-                                            <form method="POST" action="{{ route('product.updateStock', $product->id) }}">
+                                            <form method="POST" action="{{ route('product.updateStock', $product->id) }}"
+                                                onsubmit="return confirm('Are you sure you want to update the stocks?');">
                                                 @csrf
                                                 <label class="block text-gray-700 dark:text-gray-200 mb-2">New Stock:</label>
                                                 <input type="number" min="0" name="stocks" x-model.number="newStock"
