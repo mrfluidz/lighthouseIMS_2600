@@ -71,6 +71,13 @@ class Report extends Model
     // Activity log message
     public function getActivityLogMessageAttribute()
     {
+        // Check if activity is "Out of Stock" or stock status is "Out of Stock"
+        $activityName = strtolower($this->activity->activity ?? '');
+        if (str_contains($activityName, 'out of stock') || strtolower($this->stock_status ?? '') === 'out of stock') {
+            return "This product is currently, OUT of STOCK.";
+        }
+
+        // Regular stock update logic
         if (is_null($this->initial_stocks) && is_null($this->latest_stocks)) {
             return $this->activity->activity ?? '-';
         }
@@ -81,4 +88,5 @@ class Report extends Model
 
         return "Stock updated: quantity {$action} from {$this->initial_stocks} to {$this->latest_stocks} ({$changeValue}).";
     }
+
 }

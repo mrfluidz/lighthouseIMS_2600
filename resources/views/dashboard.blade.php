@@ -66,7 +66,7 @@
                     </div>
 
                     <div class="view-more">
-                        <a href="#">View More Reports</a>
+                        <a href="report">View More Reports</a>
                     </div>
                 </div>
 
@@ -99,7 +99,7 @@
                     </ul>
 
                     <div class="view-more">
-                        <a href="#">View More Reports</a>
+                        <a href="report">View More Reports</a>
                     </div>
                 </div>
 
@@ -132,7 +132,7 @@
                     </ul>
 
                     <div class="view-more">
-                        <a href="#">View More Reports</a>
+                        <a href="report">View More Reports</a>
                     </div>
                 </div>
 
@@ -165,7 +165,7 @@
                     </ul>
 
                     <div class="view-more">
-                        <a href="#">View More Reports</a>
+                        <a href="report">View More Reports</a>
                     </div>
                 </div>
 
