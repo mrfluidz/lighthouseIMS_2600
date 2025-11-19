@@ -39,18 +39,59 @@
                     <tbody>
                         <template x-for="(item,index) in items" :key="index">
                             <tr>
+                                <!-- Product -->
                                 <td class="border p-2">
-                                    <input list="productList" x-model="item.product_code" @change="selectProduct(index)" class="border p-1 w-full">
+                                    <input list="productList" 
+                                           x-model="item.product_code" 
+                                           @change="selectProduct(index)" 
+                                           class="border p-1 w-full"
+                                           :disabled="item.id">
                                 </td>
+
+                                <!-- Price -->
                                 <td class="border p-2 text-right"><span x-text="item.price.toFixed(2)"></span></td>
-                                <td class="border p-2"><input type="number" min="1" x-model.number="item.quantity" @input="updateItem(index)" class="border p-1 w-20"></td>
-                                <td class="border p-2 text-right"><span x-text="item.subtotal.toFixed(2)"></span></td>
-                                <td class="border p-2 text-center">
-                                    <button @click="openDiscountModal(index)" class="bg-blue-500 text-white px-2 py-1 rounded">Add Discount</button>
+
+                                <!-- Quantity -->
+                                <td class="border p-2">
+                                    <input type="number" min="1" 
+                                           x-model.number="item.quantity" 
+                                           @input="updateItem(index)" 
+                                           class="border p-1 w-20"
+                                           :disabled="item.id">
                                 </td>
+
+                                <!-- Subtotal -->
+                                <td class="border p-2 text-right"><span x-text="item.subtotal.toFixed(2)"></span></td>
+
+                                <!-- Discount -->
                                 <td class="border p-2 text-center">
-                                    <button @click="saveItem(index)" x-show="!item.id" class="bg-indigo-500 text-white px-2 py-1 rounded mr-1">Save</button>
-                                    <button @click="removeItem(index,item.id)" class="bg-red-500 text-white px-2 py-1 rounded">Remove</button>
+                                    <div>
+                                        <span x-text="
+                                            item.discount_price
+                                            ? (item.discount_percent
+                                                ? '₱'+item.discount_price.toFixed(2)+' ('+item.discount_percent+'%)'
+                                                : '₱'+item.discount_price.toFixed(2))
+                                            : '—'
+                                        "></span>
+                                    </div>
+                                    <!-- Show button only if item is NOT saved -->
+                                    <button x-show="!item.id" @click="openDiscountModal(index)" 
+                                            class="bg-blue-500 text-white px-2 py-1 rounded mt-1">
+                                        Add Discount
+                                    </button>
+                                </td>
+
+                                <!-- Actions -->
+                                <td class="border p-2 text-center">
+                                    <button @click="saveItem(index)" 
+                                            x-show="!item.id" 
+                                            class="bg-indigo-500 text-white px-2 py-1 rounded mr-1">
+                                        Save
+                                    </button>
+                                    <button @click="removeItem(index,item.id)" 
+                                            class="bg-red-500 text-white px-2 py-1 rounded">
+                                        Remove
+                                    </button>
                                 </td>
                             </tr>
                         </template>
@@ -130,54 +171,69 @@ function invoiceManager(){
 
         addRow(){ 
             if(!this.invoiceSaved) return;
-            this.items.push({id:null,product_code:'',product_id:null,price:0,quantity:1,subtotal:0,discount_price:0,discount_percent:0});
+            this.items.push({
+                id:null,
+                product_code:'',
+                product_id:null,
+                price:0,
+                quantity:1,
+                subtotal:0,
+                discount_price:0,
+                discount_percent:null
+            });
         },
 
         selectProduct(index){
-            const code = this.items[index].product_code;
+            const i = this.items[index];
+            if(i.id) return;
+            const code = i.product_code;
             const prod = this.products.find(p=>p.code===code);
             if(prod){
-                this.items[index].product_id = prod.id;
-                this.items[index].price = parseFloat(prod.price);
+                i.product_id = prod.id;
+                i.price = parseFloat(prod.price);
                 this.updateItem(index);
             }
         },
 
         updateItem(index){
-            this.updateSubtotal(index);
-            this.recalculateTotal();
-            if(this.items[index].id) this.saveItem(index); // auto-save if already exists
-        },
-
-        updateSubtotal(index){
             const i = this.items[index];
-            const base = i.price * i.quantity;
-            const discount = (i.discount_percent || 0)/100 * base + (i.discount_price || 0);
-            i.subtotal = base - discount;
-        },
-
-        recalculateTotal(){
-            this.items.forEach((i,idx)=>this.updateSubtotal(idx));
+            // Recalculate subtotal
+            const discountAmount = i.discount_percent ? (i.discount_percent/100)*(i.price*i.quantity) : (i.discount_price || 0);
+            i.subtotal = (i.price * i.quantity) - discountAmount;
         },
 
         openDiscountModal(index){
-            this.discountModal.show=true;
-            this.discountModal.index=index;
-            this.discountModal.type='amount';
-            this.discountModal.value=0;
+            const i = this.items[index];
+            this.discountModal.show = true;
+            this.discountModal.index = index;
+            if(i.discount_percent){
+                this.discountModal.type = 'percent';
+                this.discountModal.value = i.discount_percent;
+            } else {
+                this.discountModal.type = 'amount';
+                this.discountModal.value = i.discount_price || 0;
+            }
         },
 
         applyDiscount(){
             const i = this.items[this.discountModal.index];
-            if(this.discountModal.type==='amount') i.discount_price=this.discountModal.value;
-            else i.discount_percent=this.discountModal.value;
-            this.updateItem(this.discountModal.index);
-            this.discountModal.show=false;
+            if(this.discountModal.type === 'percent'){
+                i.discount_percent = this.discountModal.value;
+                i.discount_price = (i.discount_percent / 100) * (i.price * i.quantity);
+            } else {
+                i.discount_price = this.discountModal.value;
+                i.discount_percent = null;
+            }
+            i.subtotal = (i.price * i.quantity) - i.discount_price;
+            this.discountModal.show = false;
         },
 
         saveItem(index){
             const i = this.items[index];
             if(!i.product_id){ alert("Select a product first"); return; }
+
+            const discount_type = i.discount_percent ? 'percent' : 'amount';
+            const discount_value = i.discount_percent ? i.discount_percent : i.discount_price;
 
             fetch(`/invoice/item/${this.invoiceId}`,{
                 method:'POST',
@@ -185,17 +241,18 @@ function invoiceManager(){
                 body: JSON.stringify({
                     product_id: i.product_id,
                     quantity: i.quantity,
-                    discount_price: i.discount_price,
-                    discount_percent: i.discount_percent
+                    discount_type: discount_type,
+                    discount_value: discount_value
                 })
             })
             .then(res=>res.json())
             .then(data=>{
                 if(data.success){
+                    // Update UI from server response
                     i.id = data.item.id;
-                    this.updateSubtotal(index);
-                    this.recalculateTotal();
-                }else alert(data.message);
+                    i.discount_price = parseFloat(data.item.discount_price);
+                    i.subtotal = parseFloat(data.item.sub_total);
+                } else alert(data.message);
             })
             .catch(err=>{ console.error(err); alert('Error saving item'); });
         },
@@ -210,15 +267,25 @@ function invoiceManager(){
                 .then(data=>{
                     if(data.success){
                         this.items.splice(index,1);
-                        this.recalculateTotal();
                     } else alert(data.message);
                 });
             } else {
                 this.items.splice(index,1);
-                this.recalculateTotal();
             }
+        },
+
+        // Helper for UI display: ₱xx.xx (yy%)
+        formatDiscount(item){
+            if(item.discount_price){
+                if(item.discount_percent){
+                    return `₱${item.discount_price.toFixed(2)} (${item.discount_percent}%)`;
+                }
+                return `₱${item.discount_price.toFixed(2)}`;
+            }
+            return '—';
         }
     }
 }
 </script>
+
 </x-app-layout>

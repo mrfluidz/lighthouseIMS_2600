@@ -81,62 +81,79 @@ class InvoiceDetailController extends Controller
         }
     }
 
-    public function addItem(Request $request, $invoiceId)
-    {
-        try {
-            $invoice = Invoice::findOrFail($invoiceId);
+   public function addItem(Request $request, $invoiceId)
+{
+    try {
+        $invoice = Invoice::findOrFail($invoiceId);
 
-            $validated = $request->validate([
-                'product_id' => 'required|integer|exists:products,id',
-                'quantity' => 'required|numeric|min:1',
-                'discount_type' => 'nullable|string|in:amount,percent',
-                'discount_value' => 'nullable|numeric|min:0',
-            ]);
+        // Validate input
+        $validated = $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'quantity' => 'required|numeric|min:1',
+            'discount_type' => 'nullable|string|in:amount,percent',
+            'discount_value' => 'nullable|numeric|min:0',
+        ]);
 
-            DB::beginTransaction();
+        DB::beginTransaction();
 
-            $product = Product::findOrFail($validated['product_id']);
-            $price = $product->price;
-            $quantity = $validated['quantity'];
+        $product = Product::findOrFail($validated['product_id']);
+        $price = $product->price;
+        $quantity = $validated['quantity'];
 
-            // Calculate discount
-            $discount = 0;
-            if (!empty($validated['discount_value'])) {
-                if ($validated['discount_type'] === 'percent') {
-                    // Convert percent to decimal for DB
-                    $discountDecimal = $validated['discount_value'] / 100;
-                    $discount = $price * $quantity * $discountDecimal;
-                } else {
-                    $discount = $validated['discount_value'];
-                }
+        // Compute discount_price correctly
+        $discountPrice = 0;
+        $discountPercent = null;
+
+        if (!empty($validated['discount_value'])) {
+            if ($validated['discount_type'] === 'percent') {
+                $discountPercent = $validated['discount_value'];
+                $discountPrice = ($discountPercent / 100) * ($price * $quantity);
+            } else {
+                $discountPrice = $validated['discount_value'];
             }
-
-            $sub_total = ($price * $quantity) - $discount;
-
-            $item = InvoiceItem::create([
-                'invoice_id' => $invoice->id,
-                'product_id' => $product->id,
-                'quantity' => $quantity,
-                'discount_price' => $discount,
-                'sub_total' => $sub_total,
-                'created_by' => Auth::id(),
-                'created_on' => now(),
-            ]);
-
-            // Update invoice totals
-            $invoice->total_discount = $invoice->items()->sum('discount_price');
-            $invoice->total_amount = $invoice->items()->sum('sub_total');
-            $invoice->save();
-
-            DB::commit();
-
-            return response()->json(['success'=>true,'message'=>'Item added','item'=>$item]);
-        } catch(Exception $e){
-            DB::rollBack();
-            Log::error('Add invoice item error: ' . $e->getMessage());
-            return response()->json(['success'=>false,'message'=>$e->getMessage()],500);
         }
+
+        // Compute subtotal
+        $subTotal = ($price * $quantity) - $discountPrice;
+
+        // Save the item
+        $item = InvoiceItem::create([
+            'invoice_id' => $invoice->id,
+            'product_id' => $product->id,
+            'quantity' => $quantity,
+            'discount_price' => round($discountPrice, 2), // store as decimal
+            'sub_total' => round($subTotal, 2),
+            'created_by' => Auth::id(),
+            'created_on' => now(),
+        ]);
+
+        // Update invoice totals
+        $invoice->total_discount = $invoice->items()->sum('discount_price');
+        $invoice->total_amount = $invoice->items()->sum('sub_total');
+        $invoice->save();
+
+        DB::commit();
+
+        // Return item with all necessary info for UI
+        return response()->json([
+            'success' => true,
+            'message' => 'Item added successfully',
+            'item' => [
+                'id' => $item->id,
+                'discount_price' => $item->discount_price,
+                'sub_total' => $item->sub_total,
+                'discount_percent' => $discountPercent
+            ]
+        ]);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Add invoice item error: ' . $e->getMessage());
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
+}
+
+
 
 
     public function deleteItem($itemId)
@@ -148,7 +165,7 @@ class InvoiceDetailController extends Controller
             DB::beginTransaction();
             $item->delete();
 
-            // Recompute totals using only existing columns
+            // Recompute totals
             $invoice->total_discount = $invoice->items()->sum('discount_price');
             $invoice->total_amount = $invoice->items()->sum('sub_total');
             $invoice->save();
@@ -162,5 +179,4 @@ class InvoiceDetailController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
-
 }
